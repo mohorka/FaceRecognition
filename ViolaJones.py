@@ -10,8 +10,13 @@ def download_photo():
     global image_path
     image_path = filedialog.askopenfilename()
 
+def delete():
+    label.destroy()
+    text.destroy()
 
 def ViolaJones():
+    global label
+    global text
     image = cv.imread(image_path)
     grayscale_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     face_cascade = cv.CascadeClassifier(
@@ -33,7 +38,8 @@ def ViolaJones():
     image = Image.fromarray(image)
     width, height = image.size
     image = image.resize((width // 3, height // 3), Image.ANTIALIAS)
-    Label(window, text="Result").grid(row=1, column=3)
+    text = Label(window, text="Result")
+    text.grid(row=1, column=3)
     photo = ImageTk.PhotoImage(image)
     label = Label(window, image=photo)
     label.image = photo
@@ -47,6 +53,10 @@ window.geometry("800x400")
 button = Button(window, text="Download photo", command=download_photo, width=20)
 button.grid(column=0, row=0)
 
-button = Button(window, text="Go", command=ViolaJones, width=20)
-button.grid(column=0, row=1)
+button1 = Button(window, text="Go", command=ViolaJones, width=20)
+button1.grid(column=0, row=1)
+
+button2 = Button(window, text="Clear", command=delete, width=20)
+button2.grid(column=0, row=2)
+
 window.mainloop()

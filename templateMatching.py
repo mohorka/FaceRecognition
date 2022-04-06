@@ -19,6 +19,11 @@ def download_template():
     global template_path
     template_path = filedialog.askopenfilename()
 
+def delete():
+    label.destroy()
+    label2.destroy()
+    text1.destroy()
+    text2.destroy()
 
 def get_from_dataset():
     global is_randomly
@@ -35,6 +40,10 @@ def get_from_dataset():
 
 
 def matchingTemplateDetector():
+    global label
+    global label2
+    global text1
+    global text2
     m = method_name.get()
     if is_randomly == 1:
         image = rand_image.copy()
@@ -44,7 +53,13 @@ def matchingTemplateDetector():
         template = cv.imread(template_path, 0)
     method = eval("cv." + m)
     w, h = template.shape[::-1]
-
+    w_im, h_im = image.shape[::-1]
+    
+    if w_im > w:
+        new_w = w_im // 1
+        new_h = h_im // 1
+        image = cv.resize(image,dsize=(new_w, new_h),interpolation=cv.INTER_CUBIC)
+    
     res = cv.matchTemplate(image, template, method)
     min_val, max_val, min_loc, max_loc = cv.minMaxLoc(res)
 
@@ -62,15 +77,21 @@ def matchingTemplateDetector():
     width, height = image.size
     widthtemp, heighttemp = template.size
 
-    image = image.resize((width // 3, height // 3), Image.ANTIALIAS)
-    template = template.resize((widthtemp // 3, heighttemp // 3), Image.ANTIALIAS)
+    #if width >= 400 or height >= 400:
+        #image = image.resize((width // 3, height // 3), Image.ANTIALIAS)
 
+    #if is_randomly == 0:
+        #image = image.resize((width // 3, height // 3), Image.ANTIALIAS)
+        #template = template.resize((widthtemp // 3, heighttemp // 3), Image.ANTIALIAS)
+    #else:
     if is_randomly == 1:
-        image = image.resize((200, 200), Image.ANTIALIAS)
-        template = template.resize((200, 200), Image.ANTIALIAS)
+        image = image.resize((150, 150), Image.ANTIALIAS)
+        template = template.resize((150, 150), Image.ANTIALIAS)
 
-    Label(window, text="Result").grid(row=3, column=1)
-    Label(window, text="Template").grid(row=3, column=3)
+    text1 = Label(window, text="Result")
+    text1.grid(row=3, column=1)
+    text2 = Label(window, text="Template")
+    text2.grid(row=3, column=3)
 
     photo = ImageTk.PhotoImage(image)
     label = Label(window, image=photo)
@@ -117,5 +138,7 @@ button3.grid(column=3, row=1)
 button = Button(window, text="Go", command=matchingTemplateDetector, width=20)
 button.grid(column=0, row=2)
 
+button = Button(window, text="Clear", command=delete, width=20)
+button.grid(column=0, row=3)
 
 window.mainloop()
